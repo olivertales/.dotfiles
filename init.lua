@@ -283,16 +283,7 @@ require('lazy').setup({
     opts = {background_colour = '#201a32'},
   },
 
-  --Live server plugin
-  {
-    "aurum77/live-server.nvim",
-    build = function()
-      require"live_server.util".install()
-    end,
-    cmd = { "LiveServer", "LiveServerStart", "LiveServerStop" },
-  },
-
-  -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
+    -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
   -- require 'kickstart.plugins.autoformat',
@@ -720,9 +711,6 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = "Open diagn
 --Format
 vim.keymap.set('n', '<leader>f', '<cmd>Format<CR>', {noremap = true, silent = true, desc='[F]ormat[ ]file text'})
 
---Live Server
-
-vim.keymap.set('n', '<leader>l', '<cmd>LiveServer<CR>', {noremap = true, silent = true, desc='[L]ive[]Server'})
   --[[ nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
   nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
