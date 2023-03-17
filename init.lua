@@ -648,6 +648,7 @@ dap.configurations.cs = {
     type = "coreclr",
     name = "launch - netcoredbg",
     request = "launch",
+    preLaunchTask = "build",
     program = function()
         return vim.fn.input('Caminho para dll: ', vim.fn.getcwd() .. [[\bin\debug\]], 'file')
     end,
