@@ -32,7 +32,6 @@ I hope you enjoy your Neovim journey,
 
 P.S. You can delete this when you're done too. It's your config now :)
 --]]
-
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
@@ -71,7 +70,8 @@ require('lazy').setup({
 
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
-  { -- LSP Configuration & Plugins
+  {
+    -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
       -- Automatically install LSPs to stdpath for neovim
@@ -91,9 +91,11 @@ require('lazy').setup({
   {
     'norcalli/nvim-colorizer.lua',
     opts = {
+      '*',
+      '!vim',
       css = {
-        css = true;
-        css_fn = true;
+        css = true,
+        css_fn = true,
       },
     },
   },
@@ -101,35 +103,44 @@ require('lazy').setup({
   --Autopair plugin
   {
     'windwp/nvim-autopairs',
-    config = function ()
-      require('nvim-autopairs').setup{}
+    config = function()
+      require('nvim-autopairs').setup {}
     end,
   },
   --Auto close html tag
-  {'windwp/nvim-ts-autotag'},
+  { 'windwp/nvim-ts-autotag' },
 
   {
     "ckipp01/stylua-nvim"
   },
-
   --GitHub Pull Request UI
   {
-    'ldelossa/gh.nvim', 
+    'ldelossa/gh.nvim',
     dependencies = 'ldelossa/litee.nvim'
   },
 
-  { -- Autocompletion
+  {
+    -- Autocompletion
     'hrsh7th/nvim-cmp',
     dependencies = { 'hrsh7th/cmp-nvim-lsp', 'L3MON4D3/LuaSnip', 'saadparwaiz1/cmp_luasnip' },
   },
 
+  --Autocompletion parameter marking
+  { 'ray-x/lsp_signature.nvim' },
+
+  --Lsp autocomplete icons
+  { 'onsails/lspkind.nvim' },
+
+  --Undo tree
+  { 'mbbill/undotree' },
+
   --Snippets collection plugin
-  {'rafamadriz/friendly-snippets'},
+  { 'rafamadriz/friendly-snippets' },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
-
-  { -- Adds git releated signs to the gutter, as well as utilities for managing changes
+  { 'folke/which-key.nvim',        opts = {} },
+  {
+    -- Adds git releated signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
       -- See `:help gitsigns.txt`
@@ -143,139 +154,138 @@ require('lazy').setup({
     },
   },
 
-
---[[   { -- Theme inspired by Atom
-   'navarasu/onedark.nvim',
-   priority = 1000,
-   config = function()
-     vim.cmd.colorscheme 'onedark'
-   end,
-  }, ]]
   --Catpuccin theme
   {
-    "catppuccin/nvim", name = "catppuccin",
-    opts = {flavour = 'macchiato', transparent_background = true},
-    priority=1000,
+    "catppuccin/nvim",
+    name = "catppuccin",
+    opts = {
+      flavour = 'macchiato',
+      transparent_background = true,
+      integrations = {
+        notify = true,
+        indent_blankline = { enabled = true, colored_indent_levels = true, },
+        native_lsp = {
+          enabled = true,
+          virtual_text = {
+            errors = { "italic" },
+            hints = { "italic" },
+            warnings = { "italic" },
+            information = { "italic" },
+          },
+          underlines = {
+            errors = { "underline" },
+            hints = { "underline" },
+            warnings = { "underline" },
+            information = { "underline" },
+          },
+        },
+        mason = true,
+        cmp = true,
+        gitsigns = true,
+        telescope = true,
+        treesitter = true,
+        treesitter_context = true,
+      },
+    },
+    priority = 1000,
     config = function()
       vim.cmd.colorscheme 'catppuccin-macchiato'
     end,
   },
 
-  { -- Set lualine as statusline
+  {
+    -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
-    dependencies = {'kyazdani42/nvim-web-devicons', lazy = true},
+    dependencies = { 'kyazdani42/nvim-web-devicons', lazy = true },
     opts = {
       options = {
         component_separators = '|',
-        section_separators = {left = '', right = ''},
+        section_separators = { left = '', right = '' },
         globalstatus = true
       },
       sections = {
-        lualine_a = {'buffers'},
-        lualine_b = { 'branch', 'diff'},
-        lualine_c = { 'diagnostics'},
-        lualine_x = { "require('dap').status()",{'filetype', fmt = string.upper}, 'fileformat'},
-        lualine_y = { {'progress', fmt = string.upper}, 'location' },
-        lualine_z = { "os.date('%X')"},
+        lualine_a = { 'buffers' },
+        lualine_b = { 'branch', 'diff' },
+        lualine_c = { 'diagnostics' },
+        lualine_x = { "require('dap').status()", { 'filetype', fmt = string.upper }, 'fileformat' },
+        lualine_y = { { 'progress', fmt = string.upper }, 'location' },
+        lualine_z = { "os.date('%X')" },
       },
     },
   },
-    --Debug plugin
+  --Debug plugin
   {
     'mfussenegger/nvim-dap'
   },
-    --Debug UI plugin
-  { "rcarriga/nvim-dap-ui", dependencies = {"mfussenegger/nvim-dap"}, },
+  --Debug UI plugin
+  { "rcarriga/nvim-dap-ui",  dependencies = { "mfussenegger/nvim-dap" }, },
 
   --Startup screen plugin
   {
     "startup-nvim/startup.nvim",
-    dependencies = {"nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim"},
+    dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
     config = function()
-      require"startup".setup({
+      require "startup".setup({
         theme = "dashboard"
       })
     end
   },
 
   --Tree directory plugin
-  { 
+  {
     'SidOfc/carbon.nvim',
     config = function()
       local settings = require("carbon.settings")
       settings.sidebar_position = 'right'
       settings.auto_open = false
     end,
-  },  
+  },
 
-  -- --Tabs plugin
-  -- {
-  --   "akinsho/bufferline.nvim",
-  --   version = "v3.*",
-  --   dependencies = {"nvim-tree/nvim-web-devicons"},
-  --   opts = 
-  --   {
-  --     options = 
-  --     {
-  --       number = "ordinal",
-  --       diagnostics = "nvim_lsp",
-  --       separator_style = "thick",
-  --       enforce_regular_tabs = true,
-  --       offsets = {
-  --         {
-  --           filetype = "carbon.explorer",
-  --           text = "Explorador de Arquivos",
-  --           highlight = "Directory",
-  --           separator = true,
-  --           text_align = "center"
-  --         },
-  --       },
-  --       diagnostics_indicator = function(count, level, diagnostics_dict, context)
-  --         local s = " "
-  --         for e, n in pairs(diagnostics_dict) do
-  --           local sym = e == "error" and " "
-  --             or (e == "warning" and " " or "" )
-  --           s = s .. n .. sym
-  --         end
-  --         return s
-  --       end,
-  --     },
-  --   },
-  -- },
-  -- 
-  { -- Add indentation guides even on blank lines
+  {
+    -- Add indentation guides even on blank lines
     'lukas-reineke/indent-blankline.nvim',
     -- Enable `lukas-reineke/indent-blankline.nvim`
     -- See `:help indent_blankline.txt`
     opts = {
+      use_treesitter = true,
       char = '¦',
       space_char_blankline = ' ',
       show_trailing_blankline_indent = false,
-      show_end_of_line = true,
+      show_end_of_line = false,
       show_current_context = true,
       show_current_context_start = true,
-      indent_blankline_use_treesitter = true
+      context_highlight_list = {
+        "IndentBlanklineIndent1",
+        "IndentBlanklineIndent2",
+        "IndentBlanklineIndent3",
+        "IndentBlanklineIndent4",
+        "IndentBlanklineIndent5",
+        "IndentBlanklineIndent6",
+      },
     },
   },
 
-  --Diagnostics, references, errors list
-  --[[ {'folke/trouble.nvim', dependencies = 'nvim-tree/nvim-web-devicons'}, ]]
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
 
   --Word highlighting
-  {'RRethy/vim-illuminate'},
+  { 'RRethy/vim-illuminate' },
 
   -- Fuzzy Finder (files, lsp, etc)
   {
-    'nvim-telescope/telescope.nvim', version = '*', 
+    'nvim-telescope/telescope.nvim',
+    version = '*',
     dependencies = { 'nvim-lua/plenary.nvim' },
+  },
+  {
+    "nvim-telescope/telescope-file-browser.nvim",
+    dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
   },
 
   -- Fuzzy Finder Algorithm which requires local dependencies to be built.
   -- Only load if `make` is available. Make sure you have the system
   -- requirements installed.
- --[[  {
+  --[[  {
     'nvim-telescope/telescope-fzf-native.nvim',
     -- NOTE: If you are having trouble with this installation,
     --       refer to the README for telescope-fzf-native for more instructions.
@@ -286,12 +296,13 @@ require('lazy').setup({
   }, ]]
 
   {
-    'nvim-telescope/telescope-fzf-native.nvim', 
-    build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build ' .. 
-            'build --config Release && cmake --install build --prefix build'
+    'nvim-telescope/telescope-fzf-native.nvim',
+    build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build ' ..
+        'build --config Release && cmake --install build --prefix build'
   },
 
-  { -- Highlight, edit, and navigate code
+  {
+    -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     dependencies = {
       'nvim-treesitter/nvim-treesitter-textobjects',
@@ -300,14 +311,14 @@ require('lazy').setup({
       pcall(require('nvim-treesitter.install').update { with_sync = true })
     end,
   },
-  
+
   --Notification plugin
   {
     "rcarriga/nvim-notify",
-    opts = {background_colour = '#201a32'},
+    opts = { background_colour = '#201a32' },
   },
 
-    -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
+  -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
   -- require 'kickstart.plugins.autoformat',
@@ -326,14 +337,38 @@ require('lazy').setup({
 
 --Prettier install
 --[[ require('prettier').setup() ]]
-
+--Notify setup
 vim.notify = require("notify")
+--Extra configuration
+vim.opt.path:append { '**' }
+vim.opt.expandtab = true
+vim.opt.title = true
+vim.opt.scrolloff = 10
+--Undercurl
+vim.cmd([[let &t_Cs = "\e[4:3m"]])
+vim.cmd([[let &t_Ce = "\e[4:0m"]])
+--Turn off paste when leaving Insert
+vim.api.nvim_create_autocmd("InsertLeave", {
+  pattern = '*',
+  command = "set nopaste"
+})
+--Asterisks in block comments
+vim.opt.formatoptions:append { 'r' }
+vim.opt.wildoptions = 'pum'
 
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
+
+--indent-blankline colors
+vim.cmd [[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent2 guifg=#E5C07B gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent6 guifg=#C678DD gui=nocombine]]
 
 --Indentation lines and symbols
 vim.opt.list = true
@@ -345,7 +380,7 @@ vim.g.carbon_lazy_init = true
 -- See `:help vim.o`
 
 -- Set highlight on search
-vim.o.hlsearch = false
+vim.o.hlsearch = true
 
 -- Make line numbers default
 vim.wo.number = true
@@ -418,13 +453,13 @@ require('telescope').setup {
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
-require('nvim-treesitter.install').compilers = {"clang"}
+require('nvim-treesitter.install').compilers = { "clang" }
 
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'help', 'vim', 'css', 'html'},
+  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'help', 'vim', 'css', 'html' },
 
-  autotag = {enable = true,},
+  autotag = { enable = true, },
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
 
@@ -525,9 +560,18 @@ local on_attach = function(_, bufnr)
   end, '[W]orkspace [L]ist Folders')
 
   -- Create a command `:Format` local to the LSP buffer
-  -- vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
-  --   vim.lsp.buf.format()
-  -- end, { desc = 'Format current buffer with LSP' })
+  vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
+    vim.lsp.buf.format()
+  end, { desc = 'Format current buffer with LSP' })
+
+  --Autocompletion parameters attach
+  require('lsp_signature').on_attach({
+    bind = true,
+    handler_opts = { border = 'rounded' },
+    hint_prefix = nil,
+    always_trigger = true,
+    toggle_key = '<C-o>',
+  }, bufnr)
 end
 
 
@@ -595,59 +639,70 @@ cmp.event:on(
   'confirm_done',
   cmp_autopairs.on_confirm_done()
 )
-local handlers = require('nvim-autopairs.completion.handlers')
-
-cmp.event:on(
-  'confirm_done',
-  cmp_autopairs.on_confirm_done({
-    filetypes = {
-      -- "*" is a alias to all filetypes
-      ["*"] = {
-        ["("] = {
-          kind = {
-            cmp.lsp.CompletionItemKind.Function,
-            cmp.lsp.CompletionItemKind.Method,
-          },
-          handler = handlers["*"]
-        }
-      },
-      lua = {
-        ["("] = {
-          kind = {
-            cmp.lsp.CompletionItemKind.Function,
-            cmp.lsp.CompletionItemKind.Method
-          },
-          ---@param char string
-          ---@param item table item completion
-          ---@param bufnr number buffer number
-          ---@param rules table
-          ---@param commit_character table<string>
-          handler = function(char, item, bufnr, rules, commit_character)
-            -- Your handler function. Inpect with print(vim.inspect{char, item, bufnr, rules, commit_character})
-          end
-        }
-      },
-      -- Disable for tex
-      tex = false
-    }
-  })
-)
-
+-- local handlers = require('nvim-autopairs.completion.handlers')
+--
+-- cmp.event:on(
+--   'confirm_done',
+--   cmp_autopairs.on_confirm_done({
+--     filetypes = {
+--       -- "*" is a alias to all filetypes
+--       ["*"] = {
+--         ["("] = {
+--           kind = {
+--             cmp.lsp.CompletionItemKind.Function,
+--             cmp.lsp.CompletionItemKind.Method,
+--           },
+--           handler = handlers["*"]
+--         }
+--       },
+--       lua = {
+--         ["("] = {
+--           kind = {
+--             cmp.lsp.CompletionItemKind.Function,
+--             cmp.lsp.CompletionItemKind.Method
+--           },
+--           ---@param char string
+--           ---@param item table item completion
+--           ---@param bufnr number buffer number
+--           ---@param rules table
+--           ---@param commit_character table<string>
+--           handler = function(char, item, bufnr, rules, commit_character)
+--             -- Your handler function. Inpect with print(vim.inspect{char, item, bufnr, rules, commit_character})
+--           end
+--         }
+--       },
+--       -- Disable for tex
+--       tex = false
+--     }
+--   })
+-- )
+--
 
 cmp.setup {
+  preselect = cmp.PreselectMode.None,
+  formatting = {
+    format = require('lspkind').cmp_format({
+      mode = "symbol_text",
+      menu = ({
+        buffer = "[Buffer]",
+        nvim_lsp = "[LSP]",
+        luasnip = "[LuaSnip]",
+        nvim_lua = "[Lua]",
+        latex_symbols = "[Latex]",
+      })
+    }),
+  },
   snippet = {
     expand = function(args)
       luasnip.lsp_expand(args.body)
     end,
   },
   mapping = cmp.mapping.preset.insert {
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-k>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-j>'] = cmp.mapping.scroll_docs(4),
     ['<C-Space>'] = cmp.mapping.complete {},
-    ['<CR>'] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
-    },
+    ['<CR>'] = cmp.mapping.confirm { select = true },
+    ['<C-q>'] = cmp.mapping.close(),
     ['<Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
@@ -677,7 +732,7 @@ cmp.setup {
 -- vim: ts=2 sts=2 sw=2 et
 
 --Debugging configurations
-  
+
 local dap, dapui = require('dap'), require('dapui')
 
 --Setting up dap-ui
@@ -694,45 +749,45 @@ end
 -- require('dap.ext.vscode').load_launchjs(vim.fn.getcwd() .. [[\.vscode\launch.json]], nil)
 -- Store dll path
 vim.g.dotnet_get_dll_path = function()
-    local request = function()
-        return vim.fn.input('Path to dll: ', vim.fn.getcwd() .. [[\bin\Debug\]], 'file')
-    end
+  local request = function()
+    return vim.fn.input('Path to dll: ', vim.fn.getcwd() .. [[\bin\Debug\]], 'file')
+  end
 
-    if vim.g['dotnet_last_dll_path'] == nil then
-        vim.g['dotnet_last_dll_path'] = request()
-    else
-        if vim.fn.confirm('Do you want to change the path to dll?\n' .. vim.g['dotnet_last_dll_path'], '&yes\n&no', 2) == 1 then
-            vim.g['dotnet_last_dll_path'] = request()
-        end
+  if vim.g['dotnet_last_dll_path'] == nil then
+    vim.g['dotnet_last_dll_path'] = request()
+  else
+    if vim.fn.confirm('Do you want to change the path to dll?\n' .. vim.g['dotnet_last_dll_path'], '&yes\n&no', 2) == 1 then
+      vim.g['dotnet_last_dll_path'] = request()
     end
+  end
 
-    return vim.g['dotnet_last_dll_path']
+  return vim.g['dotnet_last_dll_path']
 end
 
 --Build DotNet project
 vim.g.dotnet_build_project = function()
-    local default_path = vim.fn.getcwd() .. '/'
-    if vim.g['dotnet_last_proj_path'] ~= nil then
-        default_path = vim.g['dotnet_last_proj_path']
-    end
-    local path = vim.fn.input('Path to your *proj file: ', default_path, 'file')
-    vim.g['dotnet_last_proj_path'] = path
-    local cmd = 'dotnet build -c Debug ' .. path .. ' > nul'
-    print('')
-    print('Cmd to execute: ' .. cmd)
-    local f = os.execute(cmd)
-    if f == 0 then
-        print('\nBuild: ✔️ ')
-    else
-        print('\nBuild: ❌ (code: ' .. f .. ')')
-    end
+  local default_path = vim.fn.getcwd() .. '/'
+  if vim.g['dotnet_last_proj_path'] ~= nil then
+    default_path = vim.g['dotnet_last_proj_path']
+  end
+  local path = vim.fn.input('Path to your *proj file: ', default_path, 'file')
+  vim.g['dotnet_last_proj_path'] = path
+  local cmd = 'dotnet build -c Debug ' .. path .. ' > nul'
+  print('')
+  print('Cmd to execute: ' .. cmd)
+  local f = os.execute(cmd)
+  if f == 0 then
+    print('\nBuild: ✔️ ')
+  else
+    print('\nBuild: ❌ (code: ' .. f .. ')')
+  end
 end
 
 dap.adapters.coreclr = {
   type = 'executable',
   command = vim.fn.stdpath('data') .. [[\mason\packages\netcoredbg\netcoredbg\netcoredbg.exe]],
-  args = {'--interpreter=vscode'},
-  options = { cwd = vim.fn.getcwd()}
+  args = { '--interpreter=vscode' },
+  options = { cwd = vim.fn.getcwd() }
 }
 
 dap.configurations.cs = {
@@ -746,38 +801,59 @@ dap.configurations.cs = {
   },
 }
 --Keybindings
+--Reconfiguration bindings
+--No copy/yank with X
+vim.keymap.set('n', 'x', '"_x')
+
+--Increment/Decrement numbers
+vim.keymap.set('n', '+', '<C-a>')
+vim.keymap.set('n', '-', '<C-x>')
+
+--Delete a word backwards
+vim.keymap.set('n', 'dw', 'vb"_d')
+
+--Select all
+vim.keymap.set('n', '<C-a>', 'gg<S-v>G')
+
+--New Tab
+vim.keymap.set('n', 'B', ':tabedit<CR>', { silent = true, noremap = true, desc = "New Ta[b]" })
 
 --Toggle Filetree
-vim.keymap.set('n', '<leader>t', require('carbon').toggle_sidebar, {noremap = true, silent = true, desc = '[T]oggle[ ]Explorer'})
+vim.keymap.set('n', '<leader>t', require('carbon').toggle_sidebar,
+{ noremap = true, silent = true, desc = '[T]oggle[ ]Explorer' })
 
 --Cycling through buffers
-vim.keymap.set('n', '<Tab>', ':bNext<CR>', {noremap = true, silent = true, desc = '[Tab] through buffer'})
-vim.keymap.set('n', '<S-Tab>', ':bPrevious<CR>', {noremap = true, silent = true, desc = 'Rever[s]e [Tab] through bubffer'})
-vim.keymap.set('n', '<C-q>', ':bd<CR>', {noremap = true, silent = true, desc = '[Q]uit [C]urrent buffer'})
+vim.keymap.set('n', '<Tab>', ':bNext<CR>', { noremap = true, silent = true, desc = '[Tab] through buffer' })
+vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>',
+{ noremap = true, silent = true, desc = 'Rever[s]e [Tab] through bubffer' })
+vim.keymap.set('n', '<C-q>', ':bd<CR>', { noremap = true, silent = true, desc = '[Q]uit [C]urrent buffer' })
 
 --Moving selected lines/words
 -- Normal-mode commands
-vim.keymap.set('n', '<A-j>', ':m+ <CR>==', {noremap = true, silent = true, desc='Move line [Down]'})
-vim.keymap.set('n', '<A-k>', ':m-2 <CR>==', {noremap = true, silent = true, desc='Move line [Up]'})
+vim.keymap.set('n', '<A-j>', ':m+ <CR>==', { noremap = true, silent = true, desc = 'Move line [Down]' })
+vim.keymap.set('n', '<A-k>', ':m-2 <CR>==', { noremap = true, silent = true, desc = 'Move line [Up]' })
 
 -- Visual-mode commands
-vim.keymap.set('v', '<A-j>', ":m '>+1'<CR>gv=gv", {noremap = true, silent = true, desc='Move line [Down]'})
-vim.keymap.set('v', '<A-k>', ":m '<-2'<CR>gv=gv", {noremap = true, silent = true, desc='Move line [Up]'})
+vim.keymap.set('v', '<A-j>', ":m '>+1'<CR>gv=gv", { noremap = true, silent = true, desc = 'Move line [Down]' })
+vim.keymap.set('v', '<A-k>', ":m '<-2'<CR>gv=gv", { noremap = true, silent = true, desc = 'Move line [Up]' })
 
 --Debugging Keybindings
-vim.keymap.set('n', '<F5>', dap.continue, {noremap = true, silent = true, desc='Debug Start/Continue'})
-vim.keymap.set('n', '<S-F5>', dap.restart, {noremap = true, silent = true, desc='Debug Restart'})
-vim.keymap.set('n', '<F6>', dap.terminate, {noremap = true, silent = true, desc='Debug Stop'})
-vim.keymap.set('n', '<F10>', dap.step_over, {noremap = true, silent = true, desc='Debug Step Over'})
-vim.keymap.set('n', '<F11>', dap.step_into, {noremap = true, silent = true, desc='Debug Step Into'})
-vim.keymap.set('n', '<S-F11>', dap.step_out, {noremap = true, silent = true, desc='Debug Step Out'})
-vim.keymap.set('n', '<F9>', dap.toggle_breakpoint, {noremap = true, silent = true, desc='Debug toggle breakpoint'})
-vim.keymap.set('n', '<S-F9>', dap.clear_breakpoints, {noremap = true, silent = true, desc='Debug remove all breakpoints'})
-vim.keymap.set('n', '<leader>bd', ':lua vim.g.dotnet_build_project()<CR>', { noremap = true, silent = true, desc='[B]uild[ ][D]otNet' })
+vim.keymap.set('n', '<F5>', dap.continue, { noremap = true, silent = true, desc = 'Debug Start/Continue' })
+vim.keymap.set('n', '<S-F5>', dap.restart, { noremap = true, silent = true, desc = 'Debug Restart' })
+vim.keymap.set('n', '<F6>', dap.terminate, { noremap = true, silent = true, desc = 'Debug Stop' })
+vim.keymap.set('n', '<F10>', dap.step_over, { noremap = true, silent = true, desc = 'Debug Step Over' })
+vim.keymap.set('n', '<F11>', dap.step_into, { noremap = true, silent = true, desc = 'Debug Step Into' })
+vim.keymap.set('n', '<S-F11>', dap.step_out, { noremap = true, silent = true, desc = 'Debug Step Out' })
+vim.keymap.set('n', '<F9>', dap.toggle_breakpoint, { noremap = true, silent = true, desc = 'Debug toggle breakpoint' })
+vim.keymap.set('n', '<S-F9>', dap.clear_breakpoints, { noremap = true, silent = true, desc =
+'Debug remove all breakpoints' })
+vim.keymap.set('n', '<leader>db', ':lua vim.g.dotnet_build_project()<CR>',
+{ noremap = true, silent = true, desc = '[B]uild[ ][D]otNet' })
+vim.keymap.set('n', '<leader>dr', ':! dotnet watch run vim.fn.getcwd<CR>',
+{ noremap = true, silent = true, desc = '[D]otNet Watch [R]un' })
 
 --List of errors, diagnostics... plugin
 --[[ vim.keymap.set('n', '<leader>l', '<cmd>TroubleToggle<CR>', {noremap = true, silent = true, desc='Toggle Trouble diagnostics[ ][l]ist'}) ]]
-
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
@@ -785,7 +861,7 @@ vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = "Open float
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
 
 --Format
-vim.keymap.set('n', '<leader>f', '<cmd>Format<CR>', {noremap = true, silent = true, desc='[F]ormat[ ]file text'})
+vim.keymap.set('n', '<leader>f', '<cmd>Format<CR>', { noremap = true, silent = true, desc = '[F]ormat[ ]file text' })
 
 --Telescope LSP keybindings
 --[[ nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
@@ -810,65 +886,70 @@ nmap('<leader>wl', function()
   print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
 end, '[W]orkspace [L]ist Folders')
  ]]
+--Git/Fugitive
+vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { silent = true, noremap = true, desc = '[G]it [S]tatus' })
+vim.keymap.set('n', '<leader>gc', ':Git ', { noremap = true, desc = '[G]it [C]ommand line' })
 
---GitHub PR bindings
+--GitHub PR setup and bindings
+require('litee.lib').setup()
+require('litee.gh').setup()
+
 local wk = require("which-key")
 wk.register({
-    g = {
-        name = "+Git",
-        h = {
-            name = "+Github",
-            c = {
-                name = "+Commits",
-                c = { "<cmd>GHCloseCommit<cr>", "Close" },
-                e = { "<cmd>GHExpandCommit<cr>", "Expand" },
-                o = { "<cmd>GHOpenToCommit<cr>", "Open To" },
-                p = { "<cmd>GHPopOutCommit<cr>", "Pop Out" },
-                z = { "<cmd>GHCollapseCommit<cr>", "Collapse" },
-            },
-            i = {
-                name = "+Issues",
-                p = { "<cmd>GHPreviewIssue<cr>", "Preview" },
-            },
-            l = {
-                name = "+Litee",
-                t = { "<cmd>LTPanel<cr>", "Toggle Panel" },
-            },
-            r = {
-                name = "+Review",
-                b = { "<cmd>GHStartReview<cr>", "Begin" },
-                c = { "<cmd>GHCloseReview<cr>", "Close" },
-                d = { "<cmd>GHDeleteReview<cr>", "Delete" },
-                e = { "<cmd>GHExpandReview<cr>", "Expand" },
-                s = { "<cmd>GHSubmitReview<cr>", "Submit" },
-                z = { "<cmd>GHCollapseReview<cr>", "Collapse" },
-            },
-            p = {
-                name = "+Pull Request",
-                c = { "<cmd>GHClosePR<cr>", "Close" },
-                d = { "<cmd>GHPRDetails<cr>", "Details" },
-                e = { "<cmd>GHExpandPR<cr>", "Expand" },
-                o = { "<cmd>GHOpenPR<cr>", "Open" },
-                p = { "<cmd>GHPopOutPR<cr>", "PopOut" },
-                r = { "<cmd>GHRefreshPR<cr>", "Refresh" },
-                t = { "<cmd>GHOpenToPR<cr>", "Open To" },
-                z = { "<cmd>GHCollapsePR<cr>", "Collapse" },
-            },
-            t = {
-                name = "+Threads",
-                c = { "<cmd>GHCreateThread<cr>", "Create" },
-                n = { "<cmd>GHNextThread<cr>", "Next" },
-                t = { "<cmd>GHToggleThread<cr>", "Toggle" },
-            },
-        },
+  g = {
+    name = "+Git",
+    h = {
+      name = "+Github",
+      c = {
+        name = "+Commits",
+        c = { "<cmd>GHCloseCommit<cr>", "Close" },
+        e = { "<cmd>GHExpandCommit<cr>", "Expand" },
+        o = { "<cmd>GHOpenToCommit<cr>", "Open To" },
+        p = { "<cmd>GHPopOutCommit<cr>", "Pop Out" },
+        z = { "<cmd>GHCollapseCommit<cr>", "Collapse" },
+      },
+      i = {
+        name = "+Issues",
+        p = { "<cmd>GHPreviewIssue<cr>", "Preview" },
+      },
+      l = {
+        name = "+Litee",
+        t = { "<cmd>LTPanel<cr>", "Toggle Panel" },
+      },
+      r = {
+        name = "+Review",
+        b = { "<cmd>GHStartReview<cr>", "Begin" },
+        c = { "<cmd>GHCloseReview<cr>", "Close" },
+        d = { "<cmd>GHDeleteReview<cr>", "Delete" },
+        e = { "<cmd>GHExpandReview<cr>", "Expand" },
+        s = { "<cmd>GHSubmitReview<cr>", "Submit" },
+        z = { "<cmd>GHCollapseReview<cr>", "Collapse" },
+      },
+      p = {
+        name = "+Pull Request",
+        c = { "<cmd>GHClosePR<cr>", "Close" },
+        d = { "<cmd>GHPRDetails<cr>", "Details" },
+        e = { "<cmd>GHExpandPR<cr>", "Expand" },
+        o = { "<cmd>GHOpenPR<cr>", "Open" },
+        p = { "<cmd>GHPopOutPR<cr>", "PopOut" },
+        r = { "<cmd>GHRefreshPR<cr>", "Refresh" },
+        t = { "<cmd>GHOpenToPR<cr>", "Open To" },
+        z = { "<cmd>GHCollapsePR<cr>", "Collapse" },
+      },
+      t = {
+        name = "+Threads",
+        c = { "<cmd>GHCreateThread<cr>", "Create" },
+        n = { "<cmd>GHNextThread<cr>", "Next" },
+        t = { "<cmd>GHToggleThread<cr>", "Toggle" },
+      },
     },
+  },
 }, { prefix = "<leader>" })
 
 --Telescope Keybindings
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
 vim.keymap.set('n', '<leader>/', function()
-
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
     winblend = 10,
@@ -881,3 +962,23 @@ vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
+--Telescope File Browser
+function telescope_buffer_dir()
+  return vim.fn.expand('%:p:h')
+end
+
+local fBrowserConfiguration =
+'<cmd>lua require("telescope").extensions.file_browser.file_browser({path = "%:p:h", cwd = telescope_buffer_dir(), respect_git_ignore = false, hidden = true, grouped = true, previewer = false, initial_mode = "normal", layout_config = {height = 40}})<CR>'
+
+vim.keymap.set('n', '<leader>sb', fBrowserConfiguration,
+{ silent = true, noremap = true, desc = "[S]earch File [B]rowser" }
+)
+
+--Replace text
+vim.keymap.set('n', ';', ':%s/', { desc = 'Replace text' })
+
+--UndoTree toggle
+vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { silent = true, noremap = true, desc = '[U]ndo Tree Toggle' })
+
+--Neovim statusline terminal access
+vim.keymap.set('n', '<F2>', ':! ', { desc = 'Terminal statusline' })
