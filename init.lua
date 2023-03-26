@@ -38,6 +38,9 @@ P.S. You can delete this when you're done too. It's your config now :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- NOTE: You should make sure your terminal supports this
+vim.opt.termguicolors = true
+
 -- Install package manager
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
@@ -159,7 +162,6 @@ require('lazy').setup({
     "catppuccin/nvim",
     name = "catppuccin",
     opts = {
-      flavour = 'macchiato',
       transparent_background = true,
       integrations = {
         notify = true,
@@ -192,6 +194,7 @@ require('lazy').setup({
       vim.cmd.colorscheme 'catppuccin-macchiato'
     end,
   },
+
 
   {
     -- Set lualine as statusline
@@ -254,14 +257,6 @@ require('lazy').setup({
       show_end_of_line = false,
       show_current_context = true,
       show_current_context_start = true,
-      context_highlight_list = {
-        "IndentBlanklineIndent1",
-        "IndentBlanklineIndent2",
-        "IndentBlanklineIndent3",
-        "IndentBlanklineIndent4",
-        "IndentBlanklineIndent5",
-        "IndentBlanklineIndent6",
-      },
     },
   },
 
@@ -338,7 +333,7 @@ require('lazy').setup({
 --Prettier install
 --[[ require('prettier').setup() ]]
 --Notify setup
-vim.notify = require("notify")
+--[[ vim.notify = require("notify") ]]
 --Extra configuration
 vim.opt.path:append { '**' }
 vim.opt.expandtab = true
@@ -359,16 +354,6 @@ vim.opt.wildoptions = 'pum'
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- set termguicolors to enable highlight groups
-vim.opt.termguicolors = true
-
---indent-blankline colors
-vim.cmd [[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent2 guifg=#E5C07B gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent6 guifg=#C678DD gui=nocombine]]
 
 --Indentation lines and symbols
 vim.opt.list = true
@@ -413,9 +398,6 @@ vim.o.timeoutlen = 300
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
-
--- NOTE: You should make sure your terminal supports this
-vim.o.termguicolors = true
 
 -- [[ Basic Keymaps ]]
 
