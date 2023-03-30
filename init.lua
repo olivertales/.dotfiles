@@ -38,8 +38,22 @@ P.S. You can delete this when you're done too. It's your config now :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+--Powershell setup
+local powershell_options = {
+  shell = vim.fn.executable "pwsh" == 1 and "pwsh" or "powershell",
+  shellcmdflag = "-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;",
+  shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait",
+  shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode",
+  shellquote = "",
+  shellxquote = "",
+}
+
+for option, value in pairs(powershell_options) do
+  vim.opt[option] = value
+end
+
 -- NOTE: You should make sure your terminal supports this
-vim.opt.termguicolors = true
+vim.o.termguicolors = true
 
 -- Install package manager
 --    https://github.com/folke/lazy.nvim
@@ -87,6 +101,21 @@ require('lazy').setup({
 
       -- Additional lua configuration, makes nvim stuff amazing!
       'folke/neodev.nvim',
+    },
+  },
+
+  --Windowed builtin terminal
+  {
+    'akinsho/toggleterm.nvim', 
+    version = "*", 
+    config = {
+      size = function(term)
+        if term.direction == "horizontal" then
+          return 15
+        elseif term.direction == "vertical" then
+          return vim.o.columns * 0.4
+        end
+      end,
     },
   },
 
@@ -141,60 +170,28 @@ require('lazy').setup({
   { 'rafamadriz/friendly-snippets' },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim',        opts = {} },
+  { 'folke/which-key.nvim', opts = {} },
+
   {
     -- Adds git releated signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
       -- See `:help gitsigns.txt`
       signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
+        add = { text = ' +' },
+        change = { text = ' ~' },
+        delete = { text = ' _' },
+        topdelete = { text = ' ‾' },
+        changedelete = { text = ' ~' },
       },
     },
   },
 
-  --Catpuccin theme
-  {
-    "catppuccin/nvim",
-    name = "catppuccin",
-    opts = {
-      transparent_background = true,
-      integrations = {
-        notify = true,
-        indent_blankline = { enabled = true, colored_indent_levels = true, },
-        native_lsp = {
-          enabled = true,
-          virtual_text = {
-            errors = { "italic" },
-            hints = { "italic" },
-            warnings = { "italic" },
-            information = { "italic" },
-          },
-          underlines = {
-            errors = { "underline" },
-            hints = { "underline" },
-            warnings = { "underline" },
-            information = { "underline" },
-          },
-        },
-        mason = true,
-        cmp = true,
-        gitsigns = true,
-        telescope = true,
-        treesitter = true,
-        treesitter_context = true,
-      },
-    },
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'catppuccin-macchiato'
-    end,
-  },
+  --TransparencyToggle
+  {'xiyaowong/transparent.nvim'},
 
+  --Carbon theme
+  {'nyoom-engineering/oxocarbon.nvim'},
 
   {
     -- Set lualine as statusline
@@ -204,7 +201,8 @@ require('lazy').setup({
       options = {
         component_separators = '|',
         section_separators = { left = '', right = '' },
-        globalstatus = true
+        globalstatus = true,
+        theme = 'palenight',
       },
       sections = {
         lualine_a = { 'buffers' },
@@ -222,6 +220,22 @@ require('lazy').setup({
   },
   --Debug UI plugin
   { "rcarriga/nvim-dap-ui",  dependencies = { "mfussenegger/nvim-dap" }, },
+
+  --Javascript debugging dependencies
+  {
+    'microsoft/vscode-js-debug',
+    lazy = true,
+    build = 'npm install --legacy-peer-deps && npx gulp vsDebugServerBundle && mv dist out'
+  },
+
+  --Javascript debugger
+  {
+    'mxsdev/nvim-dap-vscode-js',
+    dependencies = {'mfussenegger/nvim-dap'},
+    opts = {
+      adapters = {'pwa-node', 'pwa-chrome', 'pwa-msedge'},
+    },
+  },
 
   --Startup screen plugin
   {
@@ -330,10 +344,9 @@ require('lazy').setup({
   -- { import = 'custom.plugins' },
 }, {})
 
---Prettier install
---[[ require('prettier').setup() ]]
---Notify setup
---[[ vim.notify = require("notify") ]]
+vim.opt.background = "dark"
+vim.cmd("colorscheme oxocarbon")
+
 --Extra configuration
 vim.opt.path:append { '**' }
 vim.opt.expandtab = true
@@ -717,6 +730,34 @@ cmp.setup {
 
 local dap, dapui = require('dap'), require('dapui')
 
+-- for _, language in ipairs({ "typescript", "javascript" }) do
+--   dap.configurations[language] = {
+--     {
+--       {
+--         type = "pwa-node",
+--         request = "launch",
+--         name = "Launch file",
+--         program = "${file}",
+--         cwd = "${workspaceFolder}",
+--       },
+--       {
+--         type = "pwa-node",
+--         request = "attach",
+--         name = "Attach",
+--         processId = require'dap.utils'.pick_process,
+--         cwd = "${workspaceFolder}",
+--       },
+--       {
+--         type = "msedge",
+--         request = "launch",
+--         name = "Launch file",
+--         program = "${file}",
+--         cwd = "${workspaceFolder}",
+--       },
+--     }
+--   }
+-- end
+
 --Setting up dap-ui
 dap.listeners.after.event_initialized["dapui_config"] = function()
   dapui.open()
@@ -805,7 +846,7 @@ vim.keymap.set('n', '<leader>t', require('carbon').toggle_sidebar,
 { noremap = true, silent = true, desc = '[T]oggle[ ]Explorer' })
 
 --Cycling through buffers
-vim.keymap.set('n', '<Tab>', ':bNext<CR>', { noremap = true, silent = true, desc = '[Tab] through buffer' })
+vim.keymap.set('n', '<Tab>', ':bnext<CR>', { noremap = true, silent = true, desc = '[Tab] through buffer' })
 vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>',
 { noremap = true, silent = true, desc = 'Rever[s]e [Tab] through bubffer' })
 vim.keymap.set('n', '<C-q>', ':bd<CR>', { noremap = true, silent = true, desc = '[Q]uit [C]urrent buffer' })
@@ -964,3 +1005,28 @@ vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle, { silent = true, norema
 
 --Neovim statusline terminal access
 vim.keymap.set('n', '<F2>', ':! ', { desc = 'Terminal statusline' })
+
+--Toggle terminal
+local term = require('toggleterm.terminal').Terminal
+
+function Toggle_Terminal(termDirec)
+  term:new({direction = termDirec}):toggle()
+end
+
+vim.keymap.set('n', '<leader>it',"<cmd>lua Toggle_Terminal('tab')<CR>", {desc = 'Toggle Tab Term[i]nal', silent = true, noremap = true})
+vim.keymap.set('n', '<leader>iv',"<cmd>lua Toggle_Terminal('vertical')<CR>", {desc = 'Toggle [V]ertical Term[i]nal', silent = true, noremap = true})
+vim.keymap.set('n', '<leader>ih', "<cmd>lua Toggle_Terminal('horizontal')<CR>", {desc = 'Toggle [H]orizontal Term[i]nal', silent = true, noremap = true})
+vim.keymap.set('n', '<leader>if', "<cmd>lua Toggle_Terminal('float')<CR>", {desc = 'Toggle [F]loating Term[i]nal', silent = true, noremap = true})
+
+--Terminal mappings 
+function _G.set_terminal_keymaps()
+  local opts = {buffer = 0}
+  vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
+  vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
+  vim.keymap.set('t', '<leader><Tab>', [[<cmd>tabNext<CR>]], opts)
+end
+
+vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
+
+--Toggling through tabs
+vim.keymap.set('n', '<leader><Tab>', '<cmd>tabNext<CR>', {desc = 'Cycle[ ][Tab]s', silent = true, noremap = true})
