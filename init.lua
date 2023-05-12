@@ -221,6 +221,16 @@ require('lazy').setup({
     end
   },
 
+  --Change surrounding symbols
+  {
+    "kylechui/nvim-surround",
+    version = "*", -- Use for stability; omit to use `main` branch for the latest features
+    event = "VeryLazy",
+    config = function()
+      require("nvim-surround").setup({})
+    end
+  },
+
   --Tree directory plugin
   {
     'SidOfc/carbon.nvim',
@@ -303,12 +313,24 @@ require('lazy').setup({
   --Section context on top of the screen
   {'nvim-treesitter/nvim-treesitter-context'},
 
+  --Typescript compile plugin
+  {
+    'dmmulroy/tsc.nvim', 
+    opts = {}
+  },
+
   --Notification plugin
   {
     "rcarriga/nvim-notify",
     opts = { background_colour = '#201a32' },
   },
 
+  --Hover for formatted information plugin
+  {
+    "Fildo7525/pretty_hover",
+    event = "LspAttach",
+    opts = {}
+  },
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
@@ -616,44 +638,6 @@ cmp.event:on(
   'confirm_done',
   cmp_autopairs.on_confirm_done()
 )
--- local handlers = require('nvim-autopairs.completion.handlers')
---
--- cmp.event:on(
---   'confirm_done',
---   cmp_autopairs.on_confirm_done({
---     filetypes = {
---       -- "*" is a alias to all filetypes
---       ["*"] = {
---         ["("] = {
---           kind = {
---             cmp.lsp.CompletionItemKind.Function,
---             cmp.lsp.CompletionItemKind.Method,
---           },
---           handler = handlers["*"]
---         }
---       },
---       lua = {
---         ["("] = {
---           kind = {
---             cmp.lsp.CompletionItemKind.Function,
---             cmp.lsp.CompletionItemKind.Method
---           },
---           ---@param char string
---           ---@param item table item completion
---           ---@param bufnr number buffer number
---           ---@param rules table
---           ---@param commit_character table<string>
---           handler = function(char, item, bufnr, rules, commit_character)
---             -- Your handler function. Inpect with print(vim.inspect{char, item, bufnr, rules, commit_character})
---           end
---         }
---       },
---       -- Disable for tex
---       tex = false
---     }
---   })
--- )
---
 
 cmp.setup {
   preselect = cmp.PreselectMode.None,
@@ -1012,3 +996,6 @@ vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
 
 --Toggling through tabs
 vim.keymap.set('n', '<leader><Tab>', '<cmd>tabNext<CR>', {desc = 'Cycle[ ][Tab]s', silent = true, noremap = true})
+
+--Hover functionality
+vim.keymap.set('n', '<Esc>', '<cmd>lua require("pretty_hover").hover()<CR>', {desc = 'Hover information', silent = true, noremap = true})
