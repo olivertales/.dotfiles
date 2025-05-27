@@ -803,7 +803,6 @@ end
 --Roslyn setup
 require('roslyn').setup {
     config = {
-        on_attach = on_attach,
         settings = {
             ["csharp|inlay_hints"] = {
                 csharp_enable_inlay_hints_for_implicit_object_creation = true,
@@ -826,26 +825,6 @@ require('roslyn').setup {
     },
     filewatching = "roslyn",
     lock_target = true
-}
-
--- Enable the following language servers
---  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
---
---  Add any additional override configuration in the following tables. They will be passed to
---  the `settings` field of the server config. You must look up that documentation yourself.
-local servers = {
-    -- clangd = {},
-    -- gopls = {},
-    -- pyright = {},
-    -- rust_analyzer = {},
-    -- tsserver = {},
-    -- omnisharp = {},
-    lua_ls = {
-        Lua = {
-            workspace = { checkThirdParty = false },
-            telemetry = { enable = false },
-        },
-    },
 }
 
 --Setup autotag
@@ -873,15 +852,6 @@ require('mason').setup {
         "github:crashdummyy/mason-registry"
     }
 }
-
-
--- Ensure the servers above are installed
-local mason_lspconfig = require 'mason-lspconfig'
-
-mason_lspconfig.setup {
-    ensure_installed = vim.tbl_keys(servers),
-}
-
 
 -- nvim-cmp, luasnip and autopairs setup
 local cmp = require 'cmp'
