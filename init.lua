@@ -34,8 +34,8 @@ if not vim.loop.fs_stat(lazypath) then
         lazypath,
     }
 end
-
 vim.opt.rtp:prepend(lazypath)
+
 require('lazy').setup({
     -- NOTE: First, some plugins that don't require any configuration
 
@@ -111,43 +111,66 @@ require('lazy').setup({
         "folke/snacks.nvim",
         priority = 1000,
         lazy = false,
-        ---@type snacks.Config
-        opts = {
-            bigfile = { enabled = true },
-            bufdelete = { enabled = true },
-            dashboard = {
-                enabled = true,
-                sections = {
-                    { section = "header" },
-                    {
-                        pane = 2,
-                        section = "terminal",
-                        height = 5,
-                        padding = 1,
-                    },
-                    { section = "keys", gap = 1, padding = 1 },
-                    { pane = 2, icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
-                    { pane = 2, icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
-                    {
-                        pane = 2,
-                        icon = " ",
-                        title = "Git Status",
-                        section = "terminal",
-                        enabled = function()
-                            return Snacks.git.get_root() ~= nil
-                        end,
-                        cmd = "git status --short --branch --renames",
-                        height = 5,
-                        padding = 1,
-                        ttl = 5 * 60,
-                        indent = 3,
-                    },
-                    { section = "startup" },
-                }
-            },
-            dim = { enabled = true },
-            quickfile = { enabled = true }
-        },
+        config = function()
+            local note = require('notekeeper.data').load_note()
+            local note_text = ""
+            if note ~= nil then
+                local lines = note.lines
+                local max = #lines > 5 and 5 or #lines
+                for index = 1, max do
+                    local reversed_index = max + 1 - index
+                    note_text = note_text .. reversed_index .. " - " .. lines[reversed_index] .. "\n"
+                end
+            else
+                note_text = "No notes found"
+            end
+            require('snacks').setup({
+                bigfile = { enabled = true },
+                bufdelete = { enabled = true },
+                dashboard = {
+                    enabled = true,
+                    sections = {
+                        { section = "header" },
+                        {
+                            pane = 2,
+                            section = "terminal",
+                            height = 5,
+                            padding = 1,
+                        },
+                        { section = "keys", gap = 1, padding = 1 },
+                        { pane = 2, icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
+                        { pane = 2, icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
+                        {
+                            pane = 2,
+                            icon = " ",
+                            title = "Git Status",
+                            section = "terminal",
+                            enabled = function()
+                                return Snacks.git.get_root() ~= nil
+                            end,
+                            cmd = "git status --short --branch --renames",
+                            height = 5,
+                            padding = 1,
+                            ttl = 5 * 60,
+                            indent = 3,
+                        },
+                        {
+                            title = "Notes",
+                            icon = "🕮",
+                            pane = 2
+                        },
+                        {
+                            pane = 2,
+                            indent = 2,
+                            text = note_text
+                        },
+                        { section = "startup" },
+                    }
+                },
+                dim = { enabled = true },
+                quickfile = { enabled = true }
+            })
+        end,
     },
 
     -- Nice inline errors for lsp
@@ -517,12 +540,11 @@ require('lazy').setup({
 
     {
         "ricarim/notekeeper.nvim",
-        opts = {},
+        opts = {}
     }
 }, {})
 
 
---Rainbow indent hightlighting
 local highlight = {
     "RainbowRed",
     "RainbowYellow",
