@@ -37,30 +37,10 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-    -- NOTE: First, some plugins that don't require any configuration
-
     -- Git related plugins
     'tpope/vim-fugitive',
     'tpope/vim-rhubarb',
 
-    -- NOTE: This is where your plugins related to LSP can be installed.
-    --  The configuration is done below. Search for lspconfig to find it below.
-    --[[ {
-        -- LSP Configuration & Plugins
-        'neovim/nvim-lspconfig',
-        dependencies = {
-            -- Automatically install LSPs to stdpath for neovim
-            'williamboman/mason.nvim',
-            'williamboman/mason-lspconfig.nvim',
-
-            -- Useful status updates for LSP
-            -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-            { 'j-hui/fidget.nvim', opts = {} },
-
-            -- Additional lua configuration, makes nvim stuff amazing!
-            'folke/neodev.nvim',
-        },
-    }, ]]
     {
         "mason-org/mason-lspconfig.nvim",
         opts = {
@@ -72,7 +52,17 @@ require('lazy').setup({
         },
     },
 
-    { 'folke/neodev.nvim' },
+    {
+        "folke/lazydev.nvim",
+        ft = "lua", -- only load on lua files
+        opts = {
+            library = {
+                -- See the configuration section for more details
+                -- Load luvit types when the `vim.uv` word is found
+                { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+            },
+        },
+    },
 
     --Omnisharp alternative
     {
@@ -240,7 +230,7 @@ require('lazy').setup({
     -- Autocompletion
     {
         'hrsh7th/nvim-cmp',
-        dependencies = { 'hrsh7th/cmp-nvim-lsp' },
+        dependencies = "hrsh7th/cmp-nvim-lsp"
     },
 
     --CMP snippets completion
@@ -768,12 +758,6 @@ require('nvim-treesitter.configs').setup {
 -- LSP settings.
 --  This function gets run when an LSP connects to a particular buffer.
 local on_attach = function(client, bufnr)
-    -- NOTE: Remember that lua is a real programming language, and as such it is possible
-    -- to define small helper and utility functions so you don't have to repeat yourself
-    -- many times.
-    --
-    -- In this case, we create a function that lets us more easily define mappings specific
-    -- for LSP related items. It sets the mode, buffer and description for us each time.
     local nmap = function(keys, func, desc)
         if desc then
             desc = 'LSP: ' .. desc
@@ -782,18 +766,17 @@ local on_attach = function(client, bufnr)
         vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
     end
 
-    nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-    nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+    nmap('<leader>ln', vim.lsp.buf.rename, 'Re[n]ame')
+    nmap('<leader>la', vim.lsp.buf.code_action, 'Code [A]ction')
 
     nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
     nmap('gf', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
     nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
     nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
-    nmap('<leader>yd', require('telescope.builtin').lsp_document_symbols, '[D]ocument S[y]mbols')
-    nmap('<leader>yw', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace S[y]mbols')
+    nmap('<leader>ld', require('telescope.builtin').lsp_document_symbols, '[D]ocument Symbols')
+    nmap('<leader>lw', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace Symbols')
 
     -- See `:help K` for why this keymap
-    --nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
     nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
 
     -- Lesser used LSP functionality
@@ -821,6 +804,17 @@ local on_attach = function(client, bufnr)
         max_width = math.floor(vim.api.nvim_win_get_width(0) * 0.9)
     }, bufnr)
 end
+
+vim.api.nvim_create_autocmd('LspAttach', {
+    callback = function(ev)
+        local client = vim.lsp.get_client_by_id(ev.data.client_id)
+        if client ~= nil then
+            for bufnr, _ in pairs(client.attached_buffers) do
+                on_attach(client, bufnr)
+            end
+        end
+    end,
+})
 
 --Roslyn setup
 require('roslyn').setup {
@@ -858,15 +852,6 @@ require('nvim-ts-autotag').setup({
     }
 })
 
--- Setup neovim lua configuration
-require('neodev').setup({
-    library = { plugins = { "nvim-dap-ui" }, types = true },
-})
-
--- nvim-cmp supports additional completion capabilities, so broadcast that to servers
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
 -- Setup mason so it can manage external tooling
 require('mason').setup {
     registries = {
@@ -881,14 +866,6 @@ local luasnip = require 'luasnip'
 require("luasnip.loaders.from_vscode").lazy_load()
 local cmp_autopairs = require('nvim-autopairs.completion.cmp')
 
-vim.api.nvim_create_autocmd('LspAttach', {
-    callback = function(ev)
-        local client = vim.lsp.get_client_by_id(ev.data.client_id)
-        for bufnr, _ in pairs(client.attached_buffers) do
-            on_attach(client, bufnr)
-        end
-    end,
-})
 
 luasnip.config.setup {}
 
@@ -911,11 +888,8 @@ cmp.setup({
             item = require("lspkind").cmp_format({
                 mode = "symbol_text",
                 menu = ({
-                    buffer = "[Buffer]",
                     nvim_lsp = "[LSP]",
                     luasnip = "[LuaSnip]",
-                    nvim_lua = "[Lua]",
-                    latex_symbols = "[Latex]",
                 }),
                 maxwidth = {
                     menu = 50,
@@ -964,11 +938,20 @@ cmp.setup({
             end
         end, { 'i', 's' }),
     },
-    sources = {
+    sources = cmp.config.sources({
         { name = 'nvim_lsp' },
         { name = 'luasnip' },
-    },
+        {
+            name = 'lazydev',
+            group_index = 0,
+        }
+    }),
+
+    completion = {
+        completeopt = 'menu,menuone,noinsert,preview'
+    }
 })
+
 
 --Angular Setup TODO: Test if Neovim 11 needs this
 vim.filetype.add({
@@ -982,7 +965,6 @@ require('lspconfig').angularls.setup({
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
 
 --Debugging configurations
 
@@ -1064,6 +1046,8 @@ vim.keymap.set('n', '<C-w>q', ':lua Snacks.bufdelete.delete()<CR>', { silent = t
 --Window
 vim.keymap.set('n', '<C-w>w', ':close<CR>', { noremap = true, silent = true, desc = '[C]lose [W]indow' })
 
+vim.keymap.set('n', '<C-w>w', ':close<CR>', { noremap = true, silent = true, desc = '[C]lose [W]indow' })
+
 --Moving selected lines/words
 -- Normal-mode commands
 vim.keymap.set('n', '<A-j>', ':m+ <CR>==', { noremap = true, silent = true, desc = 'Move line [Down]' })
@@ -1131,9 +1115,12 @@ wk.add {
     { '<leader>ghpt', '<cmd>GHOpenToPR<cr>',       desc = 'Open To' },
     { '<leader>ghpz', '<cmd>GHCollapsePR<cr>',     desc = 'Collapse' },
     { '<leader>ghr',  group = 'Review' },
+    { '<leader>ghpp', '<cmd>GHPopOutPR<cr>',       desc = 'PopOut' },
+    { '<leader>ghpr', '<cmd>GHRefreshPR<cr>',      desc = 'Refresh' },
+    { '<leader>ghpt', '<cmd>GHOpenToPR<cr>',       desc = 'Open To' },
+    { '<leader>ghpz', '<cmd>GHCollapsePR<cr>',     desc = 'Collapse' },
+    { '<leader>ghr',  group = 'Review' },
     { '<leader>ghrb', '<cmd>GHStartReview<cr>',    desc = 'Begin' },
-    { '<leader>ghrc', '<cmd>GHCloseReview<cr>',    desc = 'Close' },
-    { '<leader>ghrd', '<cmd>GHDeleteReview<cr>',   desc = 'Delete' },
     { '<leader>ghre', '<cmd>GHExpandReview<cr>',   desc = 'Expand' },
     { '<leader>ghrs', '<cmd>GHSubmitReview<cr>',   desc = 'Submit' },
     { '<leader>ghrz', '<cmd>GHCollapseReview<cr>', desc = 'Collapse' },
@@ -1186,8 +1173,3 @@ end
 
 vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
 
---Toggling through tabs
-vim.keymap.set('n', '<leader><Tab>', '<cmd>tabNext<CR>', { desc = 'Cycle[ ][Tab]s', silent = true, noremap = true })
-
---Setting pumheight
-vim.o.pumheight = 10
