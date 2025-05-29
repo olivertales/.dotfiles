@@ -102,17 +102,17 @@ require('lazy').setup({
         priority = 1000,
         lazy = false,
         config = function()
-            local note = require('notekeeper.data').load_note()
+            local nkp_data = require('notekeeper.data')
+            local nkp_buffer = require('notekeeper.buffer')
+            local note = nkp_data.load_notes()
             local note_text = ""
-            if note ~= nil then
-                local lines = note.lines
-                local max = #lines > 5 and 5 or #lines
-                for index = 1, max do
-                    local reversed_index = max + 1 - index
-                    note_text = note_text .. reversed_index .. " - " .. lines[reversed_index] .. "\n"
+            if note then
+                local text_array = nkp_buffer.get_note_text(note)
+                for idx = #text_array - 1, #text_array - 12, -1 do
+                    note_text = text_array[idx] .. '\n' .. note_text
                 end
             else
-                note_text = "No notes found"
+                note_text = "No notes available"
             end
             require('snacks').setup({
                 bigfile = { enabled = true },
@@ -147,11 +147,12 @@ require('lazy').setup({
                         {
                             title = "Notes",
                             icon = "🕮",
+                            padding = 1,
                             pane = 2
                         },
                         {
                             pane = 2,
-                            indent = 2,
+                            indent = 3,
                             text = note_text
                         },
                         { section = "startup" },
@@ -230,7 +231,7 @@ require('lazy').setup({
             act_as_shift_tab = false,     -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
             default_tab = '<C-t>',        -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
             default_shift_tab = '<C-d>',  -- reverse shift default action,
-            enable_backwards = true,      -- well ...
+            enable_backwards = false,     -- well ...
             completion = false,           -- if the tabkey is used in a completion pum
             tabouts = {
                 { open = "'", close = "'" },
@@ -240,7 +241,6 @@ require('lazy').setup({
                 { open = '[', close = ']' },
                 { open = '{', close = '}' }
             },
-            ignore_beginning = true, --[[ if the cursor is at the beginning of a filled element it will rather tab out than shift the content ]]
             exclude = {} -- tabout will ignore these filetypes
         },
         dependencies = { -- These are optional
@@ -565,10 +565,10 @@ require('lazy').setup({
         opts = { background_colour = '#201a32' },
     },
 
-    {
-        "ricarim/notekeeper.nvim",
-        opts = {}
-    }
+    --Notekeeping
+    --Custom
+    { "ricarim/notekeeper.nvim",                opts = {} }
+
 }, {})
 
 
@@ -803,7 +803,7 @@ local on_attach = function(client, bufnr)
         vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
     end
 
-    nmap('<leader>ln', vim.lsp.buf.rename, 'Re[n]ame')
+    nmap('<leader>lr', vim.lsp.buf.rename, 'Re[n]ame')
     nmap('<leader>la', vim.lsp.buf.code_action, 'Code [A]ction')
 
     nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
