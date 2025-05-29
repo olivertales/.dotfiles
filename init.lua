@@ -233,6 +233,7 @@ require('lazy').setup({
             default_shift_tab = '<C-d>',  -- reverse shift default action,
             enable_backwards = false,     -- well ...
             completion = false,           -- if the tabkey is used in a completion pum
+            ignore_beginning = false,
             tabouts = {
                 { open = "'", close = "'" },
                 { open = '"', close = '"' },
