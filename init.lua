@@ -102,12 +102,12 @@ require('lazy').setup({
         priority = 1000,
         lazy = false,
         config = function()
-            local nkp_data = require('notekeeper.data')
-            local nkp_buffer = require('notekeeper.buffer')
-            local note = nkp_data.load_notes()
+            local bkp_data = require('bookeeping.data')
+            local bkp_utils = require('bookeeping.utils')
+            local note = bkp_data.load_notes()
             local note_text = ""
             if note then
-                local text_array = nkp_buffer.get_note_text(note)
+                local text_array = bkp_utils.get_note_text(note)
                 for idx = #text_array - 1, #text_array - 12, -1 do
                     note_text = text_array[idx] .. '\n' .. note_text
                 end
@@ -566,9 +566,12 @@ require('lazy').setup({
         opts = { background_colour = '#201a32' },
     },
 
-    --Notekeeping
-    --Custom
-    { "ricarim/notekeeper.nvim",                opts = {} }
+    --Bookeeping
+    --My plugin!
+    {
+        "Thalles-Gabriel/bookeeping.nvim",
+        opts = {}
+    }
 
 }, {})
 
