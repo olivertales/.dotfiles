@@ -120,19 +120,26 @@ require('lazy').setup({
                 dashboard = {
                     enabled = true,
                     sections = {
-                        { section = "header" },
                         {
-                            pane = 2,
-                            section = "terminal",
-                            height = 5,
+                            section = 'terminal',
+                            cmd = 'img2art "~\\Pictures\\berserk.png" --scale .06 --with-color --threshold 40',
+                            height = 15,
                             padding = 1,
                         },
-                        { section = "keys", gap = 1, padding = 1 },
-                        { pane = 2, icon = " ", title = "Recent Files", section = "recent_files", indent = 2, padding = 1 },
-                        { pane = 2, icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
+                        { section = "keys", title = '  Shortcuts', icon = '  ➨', padding = 1 },
+                        { pane = 2, text = '', padding = 4 },
+                        {
+                            section = "terminal",
+                            cmd = "iwr wttr.in/?0 | Select-Object -Expand Content",
+                            pane = 2,
+                            indent = 10,
+                            padding = 1
+                        },
+                        { pane = 2, icon = "   ", title = "Recent Files", section = "recent_files", padding = 1 },
+                        { pane = 2, icon = "   ", title = "Projects", section = "projects", padding = 1 },
                         {
                             pane = 2,
-                            icon = " ",
+                            icon = "   ",
                             title = "Git Status",
                             section = "terminal",
                             enabled = function()
@@ -142,20 +149,28 @@ require('lazy').setup({
                             height = 5,
                             padding = 1,
                             ttl = 5 * 60,
-                            indent = 3,
                         },
                         {
-                            title = "Notes",
-                            icon = "🕮",
-                            padding = 1,
-                            pane = 2
+                            title = "Bookeeping",
+                            icon = "   ",
                         },
                         {
-                            pane = 2,
-                            indent = 3,
-                            text = note_text
+                            text = note_text,
+                            padding = 11,
+                            height = 6
                         },
-                        { section = "startup" },
+                        { section = "startup", indent = 5 * 11 },
+                        function()
+                            return {
+                                text = vim.version()
+                            }
+                        end,
+                        function()
+                            return {
+                                text = { { ' ' .. os.date('%X') .. '\n', hl = 'SnacksDashboardFooter' }, { ' ' .. os.date('%x'), hl = 'SnacksDashboardFooter' } },
+                                indent = 5 * 11
+                            }
+                        end
                     }
                 },
                 dim = { enabled = true },
