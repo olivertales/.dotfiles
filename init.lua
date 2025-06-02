@@ -687,178 +687,8 @@ vim.o.updatetime = 250
 vim.o.timeout = true
 vim.o.timeoutlen = 300
 
--- [[ Basic Keymaps ]]
 
---File explorer keymap
-vim.keymap.set("n", "<leader><CR>", '<CMD>Oil<CR>', { desc = "Open parent directory" })
-
--- Keymaps for better default experience
--- See `:help vim.keymap.set()`
-vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
-
--- Remap for dealing with word wrap
-vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
-
--- [[ Highlight on yank ]]
--- See `:help vim.highlight.on_yank()`
-local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
-vim.api.nvim_create_autocmd('TextYankPost', {
-    callback = function()
-        vim.hl.on_yank()
-    end,
-    group = highlight_group,
-    pattern = '*',
-})
-
---Ctrl + Delete
-vim.keymap.set('i', '<C-d>', '<Esc>lce', {silent = true, noremap = true})
-
---Increment/Decrement numbers
-vim.keymap.set('n', '+', '<C-a>')
-vim.keymap.set('n', '-', '<C-x>')
-
---Select all
-vim.keymap.set('n', '<C-a>', 'gg<S-v>G')
-
---New Tab
-vim.keymap.set('n', '<C-w>t', '<cmd>tabedit<CR>', { silent = true, noremap = true, desc = "New Ta[b]" })
-vim.keymap.set('n', '<C-w>T', '<cmd>bw<CR>', { silent = true, desc = '[C]lose [T]ab' })
-
---Cycling through buffers
-vim.keymap.set('n', '<Tab>', ':bnext<CR>', { noremap = true, silent = true, desc = '[Tab] through buffer' })
-vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>',
-    { noremap = true, silent = true, desc = 'Rever[s]e [Tab] through bubffer' })
-vim.keymap.set('n', '<C-w>q', ':lua Snacks.bufdelete.delete()<CR>', { silent = true, desc = '[Q]uit [C]urrent buffer' })
-
---Window
-vim.keymap.set('n', '<C-w>w', ':close<CR>', { noremap = true, silent = true, desc = '[C]lose [W]indow' })
-
-vim.keymap.set('n', '<C-w>w', ':close<CR>', { noremap = true, silent = true, desc = '[C]lose [W]indow' })
-
---Moving selected lines/words
--- Normal-mode commands
-vim.keymap.set('n', '<A-j>', ':m+ <CR>==', { noremap = true, silent = true, desc = 'Move line [Down]' })
-vim.keymap.set('n', '<A-k>', ':m-2 <CR>==', { noremap = true, silent = true, desc = 'Move line [Up]' })
-
--- Visual-mode commands
-vim.keymap.set('v', '<A-j>', ":m '>+1'<CR>gv=gv", { noremap = true, silent = true, desc = 'Move line [Down]' })
-vim.keymap.set('v', '<A-k>', ":m '<-2'<CR>gv=gv", { noremap = true, silent = true, desc = 'Move line [Up]' })
-
---Debugging Keybindings
-vim.keymap.set('n', '<F5>', dap.continue, { noremap = true, silent = true, desc = 'Debug Start/Continue' })
-vim.keymap.set('n', '<S-F5>', dap.restart, { noremap = true, silent = true, desc = 'Debug Restart' })
-vim.keymap.set('n', '<F6>', dap.terminate, { noremap = true, silent = true, desc = 'Debug Stop' })
-vim.keymap.set('n', '<F10>', dap.step_over, { noremap = true, silent = true, desc = 'Debug Step Over' })
-vim.keymap.set('n', '<F11>', dap.step_into, { noremap = true, silent = true, desc = 'Debug Step Into' })
-vim.keymap.set('n', '<S-F11>', dap.step_out, { noremap = true, silent = true, desc = 'Debug Step Out' })
-vim.keymap.set('n', '<F9>', dap.toggle_breakpoint, { noremap = true, silent = true, desc = 'Debug toggle breakpoint' })
-vim.keymap.set('n', '<S-F9>', dap.clear_breakpoints, {
-    noremap = true,
-    silent = true,
-    desc =
-    'Debug remove all breakpoints'
-})
-vim.keymap.set('n', '<A-K>', '<cmd>lua require("dapui").eval()<cr>',
-    { noremap = true, silent = true, desc = 'Evaluate Expression' })
-
---List of errors, diagnostics... plugin
--- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', '<cmd>Trouble diagnostics toggle<CR><C-w>j',
-    { desc = "Open Trouble list" })
-
---Format
-vim.keymap.set('n', '<leader>f', '<cmd>Format<CR>', { noremap = true, silent = true, desc = '[F]ormat[ ]file text' })
-
-
---Git/Fugitive
-vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { silent = true, noremap = true, desc = '[G]it [S]tatus' })
-vim.keymap.set('n', '<leader>gc', ':Git ', { noremap = true, desc = '[G]it [C]ommand line' })
-
---GitHub PR setup and bindings
-require('litee.lib').setup()
-require('litee.gh').setup()
-
-local wk = require("which-key")
-wk.add {
-    { '<leader>g',    group = 'Git' },
-    { '<leader>gh',   group = 'Github' },
-    { '<leader>ghc',  group = 'Commits' },
-    { '<leader>ghcc', '<cmd>GHCloseCommit<cr>',    desc = 'Close' },
-    { '<leader>ghce', '<cmd>GHExpandCommit<cr>',   desc = 'Expand' },
-    { '<leader>ghco', '<cmd>GHOpenToCommit<cr>',   desc = 'Open To' },
-    { '<leader>ghcp', '<cmd>GHPopOutCommit<cr>',   desc = 'Pop Out' },
-    { '<leader>ghcz', '<cmd>GHCollapseCommit<cr>', desc = 'Collapse' },
-    { '<leader>ghi',  group = 'Issues' },
-    { '<leader>ghip', '<cmd>GHPreviewIssue<cr>',   desc = 'Preview' },
-    { '<leader>ghl',  group = 'Litee' },
-    { '<leader>ghlt', '<cmd>LTPanel<cr>',          desc = 'Toggle Panel' },
-    { '<leader>ghp',  group = 'Pull Request' },
-    { '<leader>ghpc', '<cmd>GHClosePR<cr>',        desc = 'Close' },
-    { '<leader>ghpd', '<cmd>GHPRDetails<cr>',      desc = 'Details' },
-    { '<leader>ghpe', '<cmd>GHExpandPR<cr>',       desc = 'Expand' },
-    { '<leader>ghpo', '<cmd>GHOpenPR<cr>',         desc = 'Open' },
-    { '<leader>ghpp', '<cmd>GHPopOutPR<cr>',       desc = 'PopOut' },
-    { '<leader>ghpr', '<cmd>GHRefreshPR<cr>',      desc = 'Refresh' },
-    { '<leader>ghpt', '<cmd>GHOpenToPR<cr>',       desc = 'Open To' },
-    { '<leader>ghpz', '<cmd>GHCollapsePR<cr>',     desc = 'Collapse' },
-    { '<leader>ghr',  group = 'Review' },
-    { '<leader>ghpp', '<cmd>GHPopOutPR<cr>',       desc = 'PopOut' },
-    { '<leader>ghpr', '<cmd>GHRefreshPR<cr>',      desc = 'Refresh' },
-    { '<leader>ghpt', '<cmd>GHOpenToPR<cr>',       desc = 'Open To' },
-    { '<leader>ghpz', '<cmd>GHCollapsePR<cr>',     desc = 'Collapse' },
-    { '<leader>ghr',  group = 'Review' },
-    { '<leader>ghrb', '<cmd>GHStartReview<cr>',    desc = 'Begin' },
-    { '<leader>ghre', '<cmd>GHExpandReview<cr>',   desc = 'Expand' },
-    { '<leader>ghrs', '<cmd>GHSubmitReview<cr>',   desc = 'Submit' },
-    { '<leader>ghrz', '<cmd>GHCollapseReview<cr>', desc = 'Collapse' },
-    { '<leader>ght',  group = 'Threads' },
-    { '<leader>ghtc', '<cmd>GHCreateThread<cr>',   desc = 'Create' },
-    { '<leader>ghtn', '<cmd>GHNextThread<cr>',     desc = 'Next' },
-    { '<leader>ghtt', '<cmd>GHToggleThread<cr>',   desc = 'Toggle' },
-}
-
---Telescope Keybindings
-vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>/', function()
-    -- You can pass additional configuration to telescope to change theme, layout, etc.
-    require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-        winblend = 10,
-        previewer = false,
-    })
-end, { desc = '[/] Fuzzily search in current buffer' })
-
-vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
-vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
-vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
-vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
-vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
---Telescope File Browser
---
-function telescope_buffer_dir()
-    return vim.fn.expand('%:p:h')
-end
-
-local fBrowserConfiguration =
-'<cmd>lua require("telescope").extensions.file_browser.file_browser({path = "%:p:h", cwd = telescope_buffer_dir(), respect_git_ignore = false, hidden = true, grouped = true, previewer = false, initial_mode = "normal", layout_config = {height = 40}})<CR>'
-
-vim.keymap.set('n', '<leader>sb', fBrowserConfiguration,
-    { silent = true, noremap = true, desc = "[S]earch File [B]rowser" }
-)
-
---Neovim statusline terminal access
-vim.keymap.set('n', '<F2>', ':! ', { desc = 'Terminal statusline' })
-
-
-
---Terminal mappings
-function _G.set_terminal_keymaps()
-    local opts = { buffer = 0 }
-    vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
-    vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
-end
-
+--Terminal setup
 vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
 vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
 
@@ -874,6 +704,15 @@ require('telescope').setup {
         },
     },
 }
+
+--Telescope File Browser
+function telescope_buffer_dir()
+    return vim.fn.expand('%:p:h')
+end
+
+local fBrowserConfiguration =
+'<cmd>lua require("telescope").extensions.file_browser.file_browser({path = "%:p:h", cwd = telescope_buffer_dir(), respect_git_ignore = false, hidden = true, grouped = true, previewer = false, initial_mode = "normal", layout_config = {height = 40}})<CR>'
+
 
 --Setup telescope with [Persisted] session
 require('telescope').load_extension('persisted')
@@ -1235,6 +1074,166 @@ dap.providers.configs['dotnet'] = function(bufnr)
     }
 end
 
---Keybindings
+
+-- [[ Basic Keymaps ]]
+
+--File explorer keymap
+vim.keymap.set("n", "<leader><CR>", '<CMD>Oil<CR>', { desc = "Open parent directory" })
+
+-- Keymaps for better default experience
+-- See `:help vim.keymap.set()`
+vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
+
+-- Remap for dealing with word wrap
+vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+
+-- [[ Highlight on yank ]]
+-- See `:help vim.highlight.on_yank()`
+local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
+vim.api.nvim_create_autocmd('TextYankPost', {
+    callback = function()
+        vim.hl.on_yank()
+    end,
+    group = highlight_group,
+    pattern = '*',
+})
+
+--Ctrl + Delete
+vim.keymap.set('i', '<C-d>', '<Esc>lce', { silent = true, noremap = true })
+
+--Increment/Decrement numbers
+vim.keymap.set('n', '+', '<C-a>')
+vim.keymap.set('n', '-', '<C-x>')
+
+--Select all
+vim.keymap.set('n', '<C-a>', 'gg<S-v>G')
+
+--New Tab
+vim.keymap.set('n', '<C-w>t', '<cmd>tabedit<CR>', { silent = true, noremap = true, desc = "New Ta[b]" })
+vim.keymap.set('n', '<C-w>T', '<cmd>bw<CR>', { silent = true, desc = '[C]lose [T]ab' })
+
+--Cycling through buffers
+vim.keymap.set('n', '<Tab>', ':bnext<CR>', { noremap = true, silent = true, desc = '[Tab] through buffer' })
+vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>',
+    { noremap = true, silent = true, desc = 'Rever[s]e [Tab] through bubffer' })
+vim.keymap.set('n', '<C-w>q', ':lua Snacks.bufdelete.delete()<CR>', { silent = true, desc = '[Q]uit [C]urrent buffer' })
+
+--Window
+vim.keymap.set('n', '<C-w>w', ':close<CR>', { noremap = true, silent = true, desc = '[C]lose [W]indow' })
+
+vim.keymap.set('n', '<C-w>w', ':close<CR>', { noremap = true, silent = true, desc = '[C]lose [W]indow' })
+
+--Moving selected lines/words
+-- Normal-mode commands
+vim.keymap.set('n', '<A-j>', ':m+ <CR>==', { noremap = true, silent = true, desc = 'Move line [Down]' })
+vim.keymap.set('n', '<A-k>', ':m-2 <CR>==', { noremap = true, silent = true, desc = 'Move line [Up]' })
+
+-- Visual-mode commands
+vim.keymap.set('v', '<A-j>', ":m '>+1'<CR>gv=gv", { noremap = true, silent = true, desc = 'Move line [Down]' })
+vim.keymap.set('v', '<A-k>', ":m '<-2'<CR>gv=gv", { noremap = true, silent = true, desc = 'Move line [Up]' })
+
+--Debugging Keybindings
+vim.keymap.set('n', '<F5>', dap.continue, { noremap = true, silent = true, desc = 'Debug Start/Continue' })
+vim.keymap.set('n', '<S-F5>', dap.restart, { noremap = true, silent = true, desc = 'Debug Restart' })
+vim.keymap.set('n', '<F6>', dap.terminate, { noremap = true, silent = true, desc = 'Debug Stop' })
+vim.keymap.set('n', '<F10>', dap.step_over, { noremap = true, silent = true, desc = 'Debug Step Over' })
+vim.keymap.set('n', '<F11>', dap.step_into, { noremap = true, silent = true, desc = 'Debug Step Into' })
+vim.keymap.set('n', '<S-F11>', dap.step_out, { noremap = true, silent = true, desc = 'Debug Step Out' })
+vim.keymap.set('n', '<F9>', dap.toggle_breakpoint, { noremap = true, silent = true, desc = 'Debug toggle breakpoint' })
+vim.keymap.set('n', '<S-F9>', dap.clear_breakpoints, {
+    noremap = true,
+    silent = true,
+    desc =
+    'Debug remove all breakpoints'
+})
+vim.keymap.set('n', '<A-K>', '<cmd>lua require("dapui").eval()<cr>',
+    { noremap = true, silent = true, desc = 'Evaluate Expression' })
+
+--List of errors, diagnostics... plugin
+-- Diagnostic keymaps
+vim.keymap.set('n', '<leader>q', '<cmd>Trouble diagnostics toggle<CR><C-w>j',
+    { desc = "Open Trouble list" })
+
+--Format
+vim.keymap.set('n', '<leader>f', '<cmd>Format<CR>', { noremap = true, silent = true, desc = '[F]ormat[ ]file text' })
 
 
+--Git/Fugitive
+vim.keymap.set('n', '<leader>gs', vim.cmd.Git, { silent = true, noremap = true, desc = '[G]it [S]tatus' })
+vim.keymap.set('n', '<leader>gc', ':Git ', { noremap = true, desc = '[G]it [C]ommand line' })
+
+--GitHub PR setup and bindings
+require('litee.lib').setup()
+require('litee.gh').setup()
+
+local wk = require("which-key")
+wk.add {
+    { '<leader>g',    group = 'Git' },
+    { '<leader>gh',   group = 'Github' },
+    { '<leader>ghc',  group = 'Commits' },
+    { '<leader>ghcc', '<cmd>GHCloseCommit<cr>',    desc = 'Close' },
+    { '<leader>ghce', '<cmd>GHExpandCommit<cr>',   desc = 'Expand' },
+    { '<leader>ghco', '<cmd>GHOpenToCommit<cr>',   desc = 'Open To' },
+    { '<leader>ghcp', '<cmd>GHPopOutCommit<cr>',   desc = 'Pop Out' },
+    { '<leader>ghcz', '<cmd>GHCollapseCommit<cr>', desc = 'Collapse' },
+    { '<leader>ghi',  group = 'Issues' },
+    { '<leader>ghip', '<cmd>GHPreviewIssue<cr>',   desc = 'Preview' },
+    { '<leader>ghl',  group = 'Litee' },
+    { '<leader>ghlt', '<cmd>LTPanel<cr>',          desc = 'Toggle Panel' },
+    { '<leader>ghp',  group = 'Pull Request' },
+    { '<leader>ghpc', '<cmd>GHClosePR<cr>',        desc = 'Close' },
+    { '<leader>ghpd', '<cmd>GHPRDetails<cr>',      desc = 'Details' },
+    { '<leader>ghpe', '<cmd>GHExpandPR<cr>',       desc = 'Expand' },
+    { '<leader>ghpo', '<cmd>GHOpenPR<cr>',         desc = 'Open' },
+    { '<leader>ghpp', '<cmd>GHPopOutPR<cr>',       desc = 'PopOut' },
+    { '<leader>ghpr', '<cmd>GHRefreshPR<cr>',      desc = 'Refresh' },
+    { '<leader>ghpt', '<cmd>GHOpenToPR<cr>',       desc = 'Open To' },
+    { '<leader>ghpz', '<cmd>GHCollapsePR<cr>',     desc = 'Collapse' },
+    { '<leader>ghr',  group = 'Review' },
+    { '<leader>ghpp', '<cmd>GHPopOutPR<cr>',       desc = 'PopOut' },
+    { '<leader>ghpr', '<cmd>GHRefreshPR<cr>',      desc = 'Refresh' },
+    { '<leader>ghpt', '<cmd>GHOpenToPR<cr>',       desc = 'Open To' },
+    { '<leader>ghpz', '<cmd>GHCollapsePR<cr>',     desc = 'Collapse' },
+    { '<leader>ghr',  group = 'Review' },
+    { '<leader>ghrb', '<cmd>GHStartReview<cr>',    desc = 'Begin' },
+    { '<leader>ghre', '<cmd>GHExpandReview<cr>',   desc = 'Expand' },
+    { '<leader>ghrs', '<cmd>GHSubmitReview<cr>',   desc = 'Submit' },
+    { '<leader>ghrz', '<cmd>GHCollapseReview<cr>', desc = 'Collapse' },
+    { '<leader>ght',  group = 'Threads' },
+    { '<leader>ghtc', '<cmd>GHCreateThread<cr>',   desc = 'Create' },
+    { '<leader>ghtn', '<cmd>GHNextThread<cr>',     desc = 'Next' },
+    { '<leader>ghtt', '<cmd>GHToggleThread<cr>',   desc = 'Toggle' },
+}
+
+--Telescope Keybindings
+vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
+vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader>/', function()
+    -- You can pass additional configuration to telescope to change theme, layout, etc.
+    require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+        winblend = 10,
+        previewer = false,
+    })
+end, { desc = '[/] Fuzzily search in current buffer' })
+
+vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
+vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
+vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
+vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
+
+--Telescope file browser
+vim.keymap.set('n', '<leader>sb', fBrowserConfiguration,
+    { silent = true, noremap = true, desc = "[S]earch File [B]rowser" }
+)
+
+--Neovim statusline terminal access
+vim.keymap.set('n', '<F2>', ':! ', { desc = 'Terminal statusline' })
+
+--Terminal window mappings
+function _G.set_terminal_keymaps()
+    local opts = { buffer = 0 }
+    vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
+    vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
+end
