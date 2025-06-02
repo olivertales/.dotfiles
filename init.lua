@@ -799,8 +799,21 @@ require('nvim-treesitter.configs').setup {
 }
 
 -- LSP settings.
+--LSP compilers
+local lsp_compiler = {
+    ['roslyn'] = 'dotnet'
+}
 --  This function gets run when an LSP connects to a particular buffer.
 local on_attach = function(client, bufnr)
+    --Assigning compiler based on LSP
+    local compiler = lsp_compiler[client.config.name]
+    print(vim.inspect(compiler))
+    if compiler then
+        vim.cmd('compiler ' .. lsp_compiler[client.config.name])
+        --Build command
+        nmap('<leader>lb', '<CMD>make<CR>', '[L]SP [B]uild')
+    end
+
     local nmap = function(keys, func, desc)
         if desc then
             desc = 'LSP: ' .. desc
@@ -834,6 +847,7 @@ local on_attach = function(client, bufnr)
     vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
         vim.lsp.buf.format()
     end, { desc = 'Format current buffer with LSP' })
+
 
     --Autocompletion parameters attach
     require('lsp_signature').on_attach({
@@ -890,6 +904,8 @@ vim.lsp.config('roslyn', {
         }
     }
 })
+
+--Native Neovim compiler
 vim.g.dotnet_errors_only = true
 vim.g.dotnet_show_project_file = false
 
@@ -1004,23 +1020,20 @@ cmp.setup({
 
 
 --Angular Setup TODO: Test if Neovim 11 needs this
-vim.filetype.add({
-    pattern = {
-        [".*%.component%.html"] = "htmlangular", -- Sets the filetype to `htmlangular` if it matches the pattern
-    },
-})
-vim.cmd('runtime! ftplugin/html.vim!')
-require('lspconfig').angularls.setup({
-    filetypes = { 'typescript', 'html', 'typescriptreact', 'typescript.tsx', 'htmlangular' }
-})
+-- vim.filetype.add({
+--     pattern = {
+--         [".*%.component%.html"] = "htmlangular", -- Sets the filetype to `htmlangular` if it matches the pattern
+--     },
+-- })
+-- vim.cmd('runtime! ftplugin/html.vim!')
+-- require('lspconfig').angularls.setup({
+--     filetypes = { 'typescript', 'html', 'typescriptreact', 'typescript.tsx', 'htmlangular' }
+-- })
 
--- The line beneath this is called `modeline`. See `:help modeline`
 
 --Debugging configurations
 
 local dap, dapui = require('dap'), require('dapui')
-
-require('dap.ext.vscode').load_launchjs(nil, {})
 
 --Setting up dap-ui
 dap.listeners.after.event_initialized["dapui_config"] = function()
@@ -1033,21 +1046,17 @@ dap.listeners.before.event_exited["dapui_config"] = function()
     dapui.close()
 end
 
--- Store dotnet dll path
-vim.g.dotnet_get_dll_path = function()
+-- Store debugger dll path
+vim.g.debugger_dll_path = function()
     local request = function()
-        return vim.fn.input('Path to dll: ', vim.fn.getcwd() .. [[\bin\debug\]], 'file')
+        return vim.fn.input('Path to dll: ', vim.fn.getcwd(), 'file')
     end
 
-    if vim.g['dotnet_last_dll_path'] == nil then
-        vim.g['dotnet_last_dll_path'] = request()
-        -- else
-        --     if vim.fn.confirm('Do you want to change the path to dll?\n' .. vim.g['dotnet_last_dll_path'], '&yes\n&no', 2) == 1 then
-        --         vim.g['dotnet_last_dll_path'] = request()
-        --     end
+    if vim.g['last_dll_path'] == nil then
+        vim.g['last_dll_path'] = request()
     end
 
-    return vim.g['dotnet_last_dll_path']
+    return vim.g['last_dll_path']
 end
 
 dap.adapters.coreclr = {
@@ -1065,7 +1074,7 @@ dap.providers.configs['dotnet'] = function(bufnr)
             type = "coreclr",
             request = "launch",
             program = function()
-                return vim.g.dotnet_get_dll_path()
+                return vim.g.debugger_dll_path()
             end,
             args = {},
             stopAtEntry = false,
