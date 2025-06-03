@@ -799,7 +799,7 @@ require('nvim-treesitter.configs').setup {
 }
 
 -- LSP settings.
---LSP compilers
+-- LSP compilers
 local lsp_compiler = {
     ['roslyn'] = 'dotnet'
 }
@@ -807,7 +807,6 @@ local lsp_compiler = {
 local on_attach = function(client, bufnr)
     --Assigning compiler based on LSP
     local compiler = lsp_compiler[client.config.name]
-    print(vim.inspect(compiler))
     if compiler then
         vim.cmd('compiler ' .. lsp_compiler[client.config.name])
         --Build command
@@ -1017,19 +1016,6 @@ cmp.setup({
         completeopt = 'menu,menuone,noinsert,preview,nearest'
     }
 })
-
-
---Angular Setup TODO: Test if Neovim 11 needs this
--- vim.filetype.add({
---     pattern = {
---         [".*%.component%.html"] = "htmlangular", -- Sets the filetype to `htmlangular` if it matches the pattern
---     },
--- })
--- vim.cmd('runtime! ftplugin/html.vim!')
--- require('lspconfig').angularls.setup({
---     filetypes = { 'typescript', 'html', 'typescriptreact', 'typescript.tsx', 'htmlangular' }
--- })
-
 
 --Debugging configurations
 
