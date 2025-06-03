@@ -108,9 +108,11 @@ require('lazy').setup({
             local bkp_utils = require('bookeeping.utils')
             local note = bkp_data.load_notes()
             local note_text = ""
+            local bookeeping_height = 6
             if note then
                 local text_array = bkp_utils.get_note_text(note)
-                for idx = #text_array - 1, #text_array - 12, -1 do
+                local maximum_notes = math.min(bookeeping_height, #text_array - 1)
+                for idx = #text_array - 1, #text_array - maximum_notes, -1 do
                     note_text = text_array[idx] .. '\n' .. note_text
                 end
             else
@@ -159,7 +161,7 @@ require('lazy').setup({
                         {
                             text = note_text,
                             padding = 11,
-                            height = 6
+                            height = bookeeping_height
                         },
                         { section = "startup", indent = 5 * 11 },
                         function()
