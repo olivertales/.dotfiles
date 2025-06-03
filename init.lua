@@ -807,14 +807,6 @@ local lsp_compiler = {
 }
 --  This function gets run when an LSP connects to a particular buffer.
 local on_attach = function(client, bufnr)
-    --Assigning compiler based on LSP
-    local compiler = lsp_compiler[client.config.name]
-    if compiler then
-        vim.cmd('compiler ' .. lsp_compiler[client.config.name])
-        --Build command
-        nmap('<leader>lb', '<CMD>make<CR>', '[L]SP [B]uild')
-    end
-
     local nmap = function(keys, func, desc)
         if desc then
             desc = 'LSP: ' .. desc
@@ -823,15 +815,23 @@ local on_attach = function(client, bufnr)
         vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
     end
 
+    --Assigning compiler based on LSP
+    local compiler = lsp_compiler[client.config.name]
+    if compiler then
+        vim.cmd('compiler ' .. lsp_compiler[client.config.name])
+        --Build command
+        nmap('<leader>lb', '<CMD>make<CR>', '[L]SP [B]uild')
+    end
+    local telescope = require('telescope.builtin')
     nmap('<leader>lr', vim.lsp.buf.rename, 'Re[n]ame')
     nmap('<leader>la', vim.lsp.buf.code_action, 'Code [A]ction')
+    nmap('<leader>lD', telescope.lsp_type_definitions, 'Type [D]efinition')
+    nmap('<leader>ld', telescope.lsp_document_symbols, '[D]ocument Symbols')
+    nmap('<leader>lw', telescope.lsp_dynamic_workspace_symbols, '[W]orkspace Symbols')
 
-    nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
-    nmap('gf', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-    nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
-    nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
-    nmap('<leader>ld', require('telescope.builtin').lsp_document_symbols, '[D]ocument Symbols')
-    nmap('<leader>lw', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace Symbols')
+    nmap('gd', telescope.lsp_definitions, '[G]oto [D]efinition')
+    nmap('gf', telescope.lsp_references, '[G]oto [R]eferences')
+    nmap('gi', telescope.lsp_implementations, '[G]oto [I]mplementation')
 
     -- See `:help K` for why this keymap
     nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
