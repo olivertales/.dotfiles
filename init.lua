@@ -113,10 +113,13 @@ require('lazy').setup({
                 local text_array = bkp_utils.get_note_text(note)
                 local maximum_notes = math.min(bookeeping_height, #text_array - 1)
                 for idx = #text_array - 1, #text_array - maximum_notes, -1 do
-                    local formatted_text = text_array[idx]
-                    if string.len(formatted_text) > 60 then
-                        formatted_text = string.sub(formatted_text, 1, 60) .. '\n' .. string.sub(formatted_text, 61, string.len(formatted_text))
+                    local unfmt_text = text_array[idx]
+                    local formatted_text = ''
+                    while string.len(unfmt_text) > 60 do
+                        formatted_text = string.sub(unfmt_text, 1, 60) .. '\n'
+                        unfmt_text = string.sub(unfmt_text, 61, string.len(unfmt_text))
                     end
+                    formatted_text = formatted_text .. unfmt_text
                     note_text = formatted_text .. '\n' .. note_text
                 end
             else
