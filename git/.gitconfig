@@ -1,0 +1,91 @@
+[user]
+	email = thalles.gbpereira@gmail.com
+	name = Thalles
+[core]
+  editor = nvim
+  compression = 9
+  whitespace = error
+  autocrlf = input
+[color]
+  ui = auto
+[color "diff"]
+  meta = black bold
+  frag = magenta
+  context = white
+  whitespace = yellow reverse
+  old = red
+[color "decorate"]
+  HEAD = red
+  branch = blue
+  tag = yellow
+  remoteBranch = magenta
+  stash = cyan
+[color "branch"]
+  current = magenta 
+  local = default
+  remote = yellow
+  upstream = green
+  plain = blue
+[filter "lfs"]
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+  required = true
+[alias]
+  l = log --all --graph --date=format:'%d/%m/%Y %H:%M:%S' --pretty='format: %C(magenta)%h %C(white) %an | %C(yellow)%ad%C(auto) ===> %D%n%s%n'
+  s = status --short
+  d = diff
+  ds = diff --staged
+  a = add
+  ap = add --patch
+  c = commit
+  cv = commit --verbose
+  p = push
+  u = pull
+  f = fetch 
+  b = branch
+  ck = checkout
+  sw = switch
+  rs = restore --staged
+  r = restore
+  re = reset
+  res = reset --soft
+  reh = reset --hard
+  rem = reset --mixed
+  rep = reset --patch
+[url "git@github.com"]
+  insteadOf = "gh:"
+[init]
+  defaultBranch = dev
+[branch]
+  sort = -comitterdate
+[commit]
+  template = "~/.config/git/template/.gitmessage"
+[diff]
+  context = 4
+  renames = copies
+  interHunkContext = 10
+[log]
+  graphColors = blue, yellow, cyan, magenta, green, red
+[push]
+  autoSetupRemote = true
+  default = current
+  followTags = true
+[pull]
+  current = true
+  rebase = true
+[rebase]
+  autoStash = true
+  missingCommitsCheck = warn
+[status]
+  branch = true
+  showStash = true
+  showUntrackedFiles = all
+[tag]
+  sort = -taggerdate
+[pager]
+  diff = diff-so-fancy | less --tabs=4 -RFX
+[interactive]
+  diffFilter = diff-so-fancy --patch
+[diff-so-fancy]
+  markEmptyLines = false

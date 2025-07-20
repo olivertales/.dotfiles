@@ -1,0 +1,29 @@
+bar:
+  height: 26
+  location: top
+  background: 000000ff
+
+  right:
+    - clock:
+        content:
+          - string: {text: , font: "Font Awesome 6 Free:style=solid:size=12"}
+          - string: {text: "{date} |", margin: 5}
+          - string: {text: , font: "Font Awesome 6 Free:style=solid:size=12"}
+          - string: {text: "{time} |", margin: 5}
+
+    - battery:
+        name: BAT1
+        content:
+          string: {text: "BAT: {capacity}%", margin: 5}
+
+  left:
+    - river:
+        title: {string: { text: "{seat} - {title}"  }}
+        content:
+          map:
+            conditions:
+              ~occupied: {empty: {}}
+              occupied:
+                string:
+                  margin: 5
+                  text: "{id}: {state}"
