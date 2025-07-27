@@ -1,0 +1,3 @@
+return {
+  'olivertales/bookeeping.nvim'
+}
