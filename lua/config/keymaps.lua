@@ -14,11 +14,16 @@ vim.keymap.set("x", "p", '"_dP', { desc = "Paste without yanking" })
 vim.keymap.set("n", "<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<leader>bp", ":bprevious<CR>", { desc = "Previous buffer" })
 
--- Better window navigation
-vim.keymap.set("n", "<CA-h>", "<C-w>h", { desc = "Move to left window" })
-vim.keymap.set("n", "<CA-j>", "<C-w>j", { desc = "Move to bottom window" })
-vim.keymap.set("n", "<CA-k>", "<C-w>k", { desc = "Move to top window" })
-vim.keymap.set("n", "<CA-l>", "<C-w>l", { desc = "Move to right window" })
+-- Tab segmented buffers with arglocal
+vim.keymap.set('n', '<leader>aa', function()
+  local current_args = vim.api.nvim_exec2('args', { output = true })
+  local new_arg = vim.fn.expand('%')
+  local total_args = string.gsub(current_args.output, '[%[%]]', '')
+
+  total_args = total_args .. ' ' .. new_arg
+  vim.cmd('arglocal ' .. total_args)
+  vim.cmd('last')
+end, { desc = 'Add file to arglocal' })
 
 -- Splitting & Resizing
 vim.keymap.set("n", "<C-Up>", ":resize +2<CR>", { desc = "Increase window height" })
@@ -85,4 +90,4 @@ vim.keymap.set("n", "<leader>pa", function()
   local path = vim.fn.expand("%:p")
   vim.fn.setreg("+", path)
   print("file:", path)
-end, { desc = 'Copy file full path'})
+end, { desc = 'Copy file full path' })
